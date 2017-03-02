@@ -93,3 +93,7 @@
 		return done;
 	}
 }
+//brain-dead browser detection
+if (document === undefined) {
+	module.exports = {wsRPC: wsRPC};
+}
