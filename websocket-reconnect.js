@@ -49,5 +49,5 @@ function BackOff(start = 0, end = 10, coeff = 1000)
 try {
 	document;
 } catch(e) {
-	module.exports = {wsRPC: wsRPC};
+	module.exports = {BackOff: BackOff};
 }
