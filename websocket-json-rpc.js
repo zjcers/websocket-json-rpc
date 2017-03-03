@@ -94,6 +94,8 @@
 	}
 }
 //brain-dead browser detection
-if (document === undefined) {
+try {
+	document;
+} catch(e) {
 	module.exports = {wsRPC: wsRPC};
 }

@@ -46,6 +46,8 @@ function BackOff(start = 0, end = 10, coeff = 1000)
 }
 
 //brain-dead browser detection
-if (document === undefined) {
-	module.exports = {BackOff: BackOff};
+try {
+	document;
+} catch(e) {
+	module.exports = {wsRPC: wsRPC};
 }
