@@ -37,7 +37,7 @@ function BackOff(start = 0, end = 10, coeff = 1000)
 	 * @memberof	BackOff
 	 * @returns	{number}	Number of millaseconds to wait
 	 */
-	function backOff()
+	this.backOff = function()
 	{
 		var ret = coeff*Math.pow(2, curExp);
 		curExp = (curExp+1 > end) ? end : curExp+1;
