@@ -25,10 +25,13 @@
   * @class wsRPC
   * param	{object}	ws - The websocket object to be wrapped around
   */
- function wsRPC(ws)
+ function wsRPC(ws, RPC_DEBUG)
  {
  	var inflight = {}; //rpc calls in flight (object containing resolve()/reject() objects)
  	var sequence = 0;
+ 	this.getInflight  = function() {
+ 		return inflight;
+ 	};
 	function hasKeys(obj, keys)
  	{
  		var objKeys = Object.keys(obj);
@@ -43,27 +46,28 @@
  	}
 	ws.onmessage = function(message)
 	{
-		var data;
+		var data = String(message.data);
 		//die if JSON malformed
 		try {
-			data = JSON.parse(message.data);
+			data = JSON.parse(data);
 		} catch (e) {
 			if (RPC_DEBUG)
-				console.log("wsRPC Error parsing:", message.data);
+				console.log("wsRPC Error parsing:", data);
 			return; //give up
 		}
 		//die if fields missing
-		if (!(hasKeys(data, ["result", "error", "id"]))) {
+		if (data.id === undefined || ((data.error === undefined) && (data.result === undefined))) {
 			if (RPC_DEBUG)
-				console.log("wsRPC message missing required fields: ", message.data);
+				console.log("wsRPC message missing required fields: ", data);
 			return; //give up
 		}
 		if (!(data.id in inflight)) {
 			if (RPC_DEBUG)
-				console.log("wsRPC response parsed for non-existant request", message.data);
+				console.log("wsRPC response parsed for non-existant request", data);
 			return; //give up
 		}
 		if (data.error != null) {
+			console.log(data.error);
 			inflight[data.id].reject(data.error);
 		} else {
 			inflight[data.id].resolve(data.result);
@@ -90,6 +94,7 @@
 			});
 			return Promise.race([done, timer]);
 		}
+		ws.send(JSON.stringify(request));
 		return done;
 	}
 }
